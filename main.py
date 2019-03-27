@@ -18,11 +18,11 @@ class MouseButtons:
 
 
 # settings
-window_size = (1600, 900)
+window_size = (1400, 800)
 window_width, window_height = window_size
 window_title = "Ars Amatoria - Alkohol"
 framerate = 60
-font_name = "Sans"
+font_name = "Comic Sans MS"
 
 # initialisation
 os.environ["SDL_VIDEO_CENTERED"] = '1'
@@ -36,7 +36,10 @@ text_font = pygame.font.SysFont(font_name, 18)
 
 # images
 images_background = [pygame.image.load('sprites/background.{}.png'.format(x)).convert_alpha() for x in range(0, 11)]
-images_test = [pygame.image.load('sprites/test.{}.png'.format(x)).convert_alpha() for x in range(0, 11)]
+images_1 = [pygame.image.load('sprites/persons1.{}.png'.format(x)).convert_alpha() for x in range(0, 11)]
+images_2 = [pygame.image.load('sprites/persons2.{}.png'.format(x)).convert_alpha() for x in range(0, 11)]
+images_3 = [pygame.image.load('sprites/persons3.{}.png'.format(x)).convert_alpha() for x in range(0, 11)]
+images_door = [pygame.image.load('sprites/door.{}.png'.format(x)).convert_alpha() for x in range(0, 11)]
 
 image_dialog = pygame.image.load('sprites/dialogbox.png').convert_alpha()
 
@@ -62,8 +65,13 @@ def show_dialog(title, text):
 def show_level_dialog():
     pending_dialogs.clear()
     choice = random.choice(dialogs[wine_level])
-    pending_dialogs.append(Dialog("Selbst", choice[0]))
-    pending_dialogs.append(Dialog("Typ", choice[1]))
+    c = True
+    for itm in choice:
+        if c:
+            pending_dialogs.append(Dialog("Selbst", itm))
+        else:
+            pending_dialogs.append(Dialog("Person", itm))
+        c = not c
 
 
 # helpers
@@ -195,17 +203,31 @@ def increase_wine_level():
 
 # game objects
 game_elements = [
-    Person(images_test, [200, 200], mouse_click_left=lambda: show_level_dialog()),
-    Person(images_test, [300, 400], mouse_click_left=lambda: show_level_dialog()),
-    Person(images_test, [400, 200], mouse_click_left=lambda: show_level_dialog()),
-    Person(images_test, [500, 400], mouse_click_left=lambda: show_level_dialog()),
-    PolyClickable(lambda: increase_wine_level(), [(1324, 315), (1492, 394), (1471, 663), (1321, 540)])
+    Person(images_1, [0, 0], mouse_click_left=lambda: show_level_dialog()),
+    Person(images_2, [0, 0], mouse_click_left=lambda: show_level_dialog()),
+    Person(images_3, [0, 0], mouse_click_left=lambda: show_level_dialog()),
+    Person(images_door, [0, 0], mouse_click_left=lambda: increase_wine_level())
 ]
 
 dialogs = {
-    0:  [["...", "..."], ["...", "..."], ["...", "..."], ["Uhm...", "..?"]],
-    1:  [[".1..", "..."], ["...", "..."], ["...", "..."], ["Uhm...", "..?"]],
-    2:  [["..2.", "..."], ["...", "..."], ["...", "..."], ["Uhm...", "..?"]],
+    0:  [
+        ["...", "..."],
+        ["...", "..."],
+        ["Eh...", "..."],
+        ["Uhm...", "..."]
+    ],
+    1:  [
+        ["...", "..."],
+        ["...", "..."],
+        ["...", "..."],
+        ["Uhm...", "..?"]
+    ],
+    2:  [
+        ["Hey", "Wer bist du?", "Mein Name ist Julius C & A, Ich kam sah und kaufte!", "Achso..."],
+        ["...", "..."],
+        ["...", "..."],
+        ["Uhm...", "..?"]
+    ],
     3:  [["..3.", "..."], ["...", "..."], ["...", "..."], ["Uhm...", "..?"]],
     4:  [["..4.", "..."], ["...", "..."], ["...", "..."], ["Uhm...", "..?"]],
     5:  [["..5.", "..."], ["...", "..."], ["...", "..."], ["Uhm...", "..?"]],
@@ -227,6 +249,7 @@ while True:
         if event.type == MOUSEBUTTONDOWN:
             if pending_dialogs.__len__() > 0:
                 pending_dialogs.remove(pending_dialogs[0])
+                events.remove(event)
 
     if not ended:
         if increasing:
