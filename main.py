@@ -45,6 +45,7 @@ image_dialog = pygame.image.load('sprites/dialogbox.png').convert_alpha()
 
 
 # dialogs
+# noinspection PyShadowingNames
 class Dialog:
     def __init__(self, title, text):
         self.title = title
@@ -58,6 +59,7 @@ class Dialog:
         screen.blit(t2, ((window_width / 2 - image_dialog.get_width() / 2) + 20, window_height - 200 + 45))
 
 
+# noinspection PyShadowingNames
 def show_dialog(title, text):
     pending_dialogs.append(Dialog(title, text))
 
@@ -75,6 +77,7 @@ def show_level_dialog():
 
 
 # helpers
+# noinspection PyArgumentList
 def get_outline(image, width=3, c=(255, 255, 255), threshold=127):
     mask = pygame.mask.from_surface(image, threshold)
     outline_image = pygame.Surface(image.get_size()).convert_alpha()
@@ -201,11 +204,46 @@ def increase_wine_level():
     wine_level += 1
 
 
+def show_wine_dialog(list1, list2):
+    if wine_level < 3:
+        for itm in list1:
+            show_dialog(itm[0], itm[1])
+    else:
+        for itm in list2:
+            show_dialog(itm[0], itm[1])
+
+
 # game objects
 game_elements = [
-    Person(images_1, [0, 0], mouse_click_left=lambda: show_level_dialog()),
-    Person(images_2, [0, 0], mouse_click_left=lambda: show_level_dialog()),
-    Person(images_3, [0, 0], mouse_click_left=lambda: show_level_dialog()),
+    Person(images_1, [0, 0], mouse_click_left=lambda: show_wine_dialog(
+        [
+            ["Zu sich selbst", "Ich will ihn lieber nicht ansprechen"]
+        ],
+        [
+            ["Selbst", "Hey"],
+            ["Person", "Hi, wer bist du?"],
+            ["Selbst", "Ich bin Julius C&A ich sah kam und kaufte"],
+            ["Person", "Ach, so ist das"]
+        ]
+    )),
+    Person(images_2, [0, 0], mouse_click_left=lambda: show_wine_dialog(
+        [
+            ["Zu sich selbst", "Ich würde ja mitsingen, aber.."]
+        ],
+        [
+            ["(im Kanon)", "ATEMLOS, DURCH DIE NACHT"]
+        ]
+    )),
+    Person(images_3, [0, 0], mouse_click_left=lambda: show_wine_dialog(
+        [
+            ["Zu sich selbst", "Ich weiß nicht was ich sagen soll..."]
+        ],
+        [
+            ["Selbst", "Nunc est bibendum"],
+            ["Person", "Latinus abgewähltus in Oberstufibus est"],
+            ["Selbst", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr.."]
+        ]
+    )),
     Person(images_door, [0, 0], mouse_click_left=lambda: increase_wine_level())
 ]
 
@@ -270,6 +308,9 @@ while True:
 
                 if pending_dialogs.__len__() > 0:
                     pending_dialogs[0].blit(screen)
+
+                if wine_level > 5:
+                    raise IndexError()
 
                 # debug
                 fps = text_font.render("DEBUG: " + str(int(clock.get_fps())) + "|" + str(wine_level), True, pygame.Color('white'))
